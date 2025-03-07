@@ -1,5 +1,5 @@
 <script setup>
-import { usePostStore } from '@/stores/posts';
+import { usePostStore } from '~/stores/posts';
 import PostCard from '@/components/PostCard.vue';
 
 const postStore = usePostStore();
