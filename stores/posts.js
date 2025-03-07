@@ -1,27 +1,31 @@
 import { defineStore } from 'pinia';
+import { useFetch } from '#app'; 
 
 export const usePostStore = defineStore('postStore', {
   state: () => ({
     posts: [],
-    cacheTime: 15 * 60 * 1000, // 15 minutes in milliseconds
+    cacheTime: 15 * 60 * 1000, // 15 minutes
     lastFetched: 0,
-    cachedData: null,
+    cachedData: 0,
   }),
 
   actions: {
     async fetchPosts() {
-      // Check if data is still fresh (within 15 minutes)
       if (this.isDataFresh()) {
         console.log('✅ Using cached data');
         return this.cachedData;
       }
 
-      console.log('⏳ Fetching new data from API...');
+      console.log('⏳ Fetching new data from API with useFetch...');
       try {
-        const response = await fetch('https://dummyjson.com/posts');
-        const data = await response.json();
-        this.posts = data.posts;
-        this.cachedData = data;
+        const { data, error } = await useFetch('https://dummyjson.com/posts');
+
+        if (error.value) {
+          throw new Error(error.value);
+        }
+
+        this.posts = data.value.posts;
+        this.cachedData = data.value;
         this.lastFetched = Date.now();
         console.log('🔄 Data fetched successfully and cached.');
       } catch (error) {
